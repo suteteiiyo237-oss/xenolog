@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XENOLOG — 地球文化収集記録</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --void:#03040a;
+  --deep:#070a12;
+  --panel:#0c1220;
+  --panel2:#111828;
+  --rim:#1a2540;
+  --rim2:#243050;
+  --txt:#c8d8f0;
+  --txt2:#6a80a8;
+  --txt3:#374560;
+  --cyan:#00e5ff;
+  --cyan2:#00b8d4;
+  --green:#00ff9d;
+  --amber:#ffb300;
+  --purple:#b47aff;
+  --red:#ff4060;
+  --pink:#ff6eb4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--void);
+  color:var(--txt);
+  font-family:'Noto Sans JP',sans-serif;
+  display:flex;flex-direction:column;height:100vh;
+}
+body::after{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);
+  pointer-events:none;z-index:490;
+}
+
+/* ══ HEADER ══ */
+header{
+  background:rgba(7,10,18,0.95);
+  border-bottom:1px solid var(--rim);
+  padding:0 1.25rem;height:52px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;position:relative;z-index:50;
+}
+header::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.35;
+}
+.logo{
+  font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:900;
+  letter-spacing:0.2em;color:var(--cyan);
+  text-shadow:0 0 20px rgba(0,229,255,0.5);
+  display:flex;align-items:center;gap:0.5rem;
+}
+.hud{display:flex;align-items:center;gap:0.85rem;}
+.hud-v{
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  color:var(--txt2);letter-spacing:0.06em;
+}
+.hud-v span{color:var(--cyan);}
+.btn{
+  padding:0.35rem 0.85rem;border-radius:3px;
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.06em;cursor:pointer;transition:all 0.15s;border:none;
+}
+.btn-c{background:var(--cyan);color:var(--void);}
+.btn-c:hover{background:var(--cyan2);}
+.btn-g{background:transparent;color:var(--txt2);border:1px solid var(--rim2);}
+.btn-g:hover{border-color:var(--cyan);color:var(--cyan);}
+.btn-a{background:rgba(255,179,0,0.12);color:var(--amber);border:1px solid rgba(255,179,0,0.25);}
+.btn-a:hover{background:rgba(255,179,0,0.22);}
+
+/* ══ MISSION BAR ══ */
+.mbar{
+  background:var(--deep);border-bottom:1px solid var(--rim);
+  padding:0.5rem 1.25rem;flex-shrink:0;position:relative;z-index:50;
+}
+.mbar-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:0.85rem;flex-wrap:wrap;}
+.ml{font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;color:var(--txt3);flex-shrink:0;}
+.ptrack{flex:1;min-width:80px;height:5px;background:var(--rim);border-radius:3px;overflow:hidden;position:relative;}
+.pfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),#00ffcc);
+  box-shadow:0 0 8px #00ff9d;transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);}
+.ppct{font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;color:var(--green);
+  text-shadow:0 0 8px #00ff9d;flex-shrink:0;min-width:38px;}
+.pphase{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--amber);letter-spacing:0.05em;flex-shrink:0;}
+
+/* ══ NAV ══ */
+nav{
+  background:rgba(7,10,18,0.9);border-bottom:1px solid var(--rim);
+  display:flex;flex-shrink:0;position:relative;z-index:50;
+}
+.nb{
+  padding:0.55rem 1rem;
+  font-family:'Share Tech Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.07em;color:var(--txt3);
+  cursor:pointer;border:none;background:transparent;
+  border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;
+}
+.nb.on{color:var(--cyan);border-bottom-color:var(--cyan);}
+.nb:hover:not(.on){color:var(--txt2);}
+.nb .dot{
+  display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--red);margin-left:0.3rem;vertical-align:middle;
+  animation:dp 1.2s ease-in-out infinite;
+}
+@keyframes dp{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* ══ CONTENT ══ */
+.content{flex:1;overflow:hidden;min-height:0;position:relative;}
+.page{display:none;height:100%;overflow-y:auto;position:relative;}
+.page::-webkit-scrollbar{width:3px;}
+.page::-webkit-scrollbar-track{background:var(--deep);}
+.page::-webkit-scrollbar-thumb{background:var(--rim2);}
+.page.on{display:block;}
+.inner{max-width:900px;margin:0 auto;padding:1.25rem 1rem 3rem;}
+
+/* ═══════════════════════════════════════════
+   HOME PAGE — SPACESHIP + ALIEN
+═══════════════════════════════════════════ */
+#home{overflow:hidden;}
+
+.ship-scene{
+  position:relative;
+  width:100%;height:100%;
+  min-height:calc(100vh - 160px);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* SPACE BG */
+.space-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(0,229,255,0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 75%, rgba(180,122,255,0.06) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(0,100,255,0.03) 0%, transparent 60%),
+    #03040a;
+}
+/* STARS */
+.stars-layer{position:absolute;inset:0;overflow:hidden;}
+.star-p{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d,3s) ease-in-out infinite var(--delay,0s);}
+@keyframes twinkle{0%,100%{opacity:var(--op1,.7)}50%{opacity:var(--op2,.2)}}
+
+/* SPACESHIP */
+.ship-wrap{
+  position:absolute;
+  top:0;left:0;right:0;bottom:40%;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.spaceship{
+  position:relative;
+  width:min(560px,90vw);
+  height:min(300px,42vw);
+  animation:shipFloat 6s ease-in-out infinite;
+}
+@keyframes shipFloat{0%,100%{transform:translateY(0) rotate(-0.5deg)}50%{transform:translateY(-12px) rotate(0.5deg)}}
+
+/* SVG spaceship drawn inline */
+.ship-svg{width:100%;height:100%;filter:drop-shadow(0 0 24px rgba(0,229,255,0.3));}
+
+/* ENGINE GLOW */
+.engine-glow{
+  position:absolute;
+  bottom:18%;left:50%;
+  transform:translateX(-50%);
+  width:80px;height:16px;
+  background:radial-gradient(ellipse,rgba(0,229,255,0.8),transparent 70%);
+  border-radius:50%;
+  animation:engGlow 1.5s ease-in-out infinite;
+}
+@keyframes engGlow{0%,100%{opacity:0.6;transform:translateX(-50%) scaleX(1)}50%{opacity:1;transform:translateX(-50%) scaleX(1.3)}}
+
+/* ALIEN CHARACTER */
+.alien-stage{
+  position:absolute;
+  bottom:2%;left:50%;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;
+  align-items:center;
+  z-index:20;
+}
+
+.alien-wrap{
+  position:relative;
+  animation:alienFloat 4s ease-in-out infinite;
+  cursor:pointer;
+  transition:filter 0.3s;
+}
+.alien-wrap:hover{filter:brightness(1.2);}
+@keyframes alienFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* THE ALIEN — SVG-based, changes with evolution level */
+.alien-body{
+  position:relative;
+  width:min(160px,28vw);
+  height:auto;
+  filter:drop-shadow(0 0 16px rgba(0,255,157,0.4));
+}
+
+/* SPEECH BUBBLE */
+.speech{
+  position:absolute;
+  top:-70px;left:50%;transform:translateX(-50%);
+  background:var(--panel2);
+  border:1px solid var(--rim2);
+  border-radius:8px;
+  padding:0.5rem 0.85rem;
+  font-size:0.72rem;color:var(--txt);
+  white-space:nowrap;
+  box-shadow:0 4px 16px rgba(0,0,0,0.5);
+  display:none;
+  font-family:'Share Tech Mono',monospace;
+  letter-spacing:0.04em;
+}
+.speech::after{
+  content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);
+  width:0;height:0;
+  border-left:6px solid transparent;border-right:6px solid transparent;
+  border-top:7px solid var(--rim2);
+}
+.alien-wrap:hover .speech{display:block;}
+
+/* ALIEN EVOLUTION LAYERS — shown/hidden via JS */
+.ev-layer{position:absolute;top:0;left:0;width:100%;height:100%;transition:opacity 0.6s;}
+
+/* HUD OVERLAY on home */
+.home-hud{
+  position:absolute;
+  top:1rem;left:1rem;right:1rem;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  pointer-events:none;z-index:30;
+  flex-wrap:wrap;gap:0.5rem;
+}
+.hhud-panel{
+  background:rgba(12,18,32,0.75);
+  border:1px solid var(--rim);
+  border-radius:6px;padding:0.6rem 0.9rem;
+  backdrop-filter:blur(8px);
+}
+.hhud-title{
+  font-family:'Share Tech Mono',monospace;font-size:0.55rem;
+  letter-spacing:0.1em;color:var(--txt3);margin-bottom:0.3rem;
+}
+.hhud-val{
+  font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:700;
+  color:var(--cyan);
+}
+.hhud-sub{font-size:0.65rem;color:var(--txt2);}
+
+/* EVOLUTION STATUS */
+.evo-panel{
+  position:absolute;
+  bottom:1rem;right:1rem;
+  background:rgba(12,18,32,0.8);
+  border:1px solid var(--rim);
+  border-radius:8px;padding:0.75rem 1rem;
+  backdrop-filter:blur(8px);z-index:30;
+  max-width:200px;
+}
+.evo-title{font-family:'Share Tech Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;color:var(--txt3);margin-bottom:0.5rem;}
+.evo-badges{display:flex;flex-wrap:wrap;gap:0.3rem;}
+.evo-badge{font-size:1.1rem;line-height:1;}
+.evo-badge.locked{filter:grayscale(1);opacity:0.25;}
+.evo-level{
+  font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700;
+  color:var(--amber);margin-top:0.4rem;
+}
+
+/* ENCOUNTER BTN on home */
+.home-actions{
+  position:absolute;
+  bottom:1rem;left:1rem;
+  display:flex;flex-direction:column;gap:0.4rem;z-index:30;
+}
+
+/* NEBULA particles */
+.nebula{position:absolute;border-radius:50%;filter:blur(40px);pointer-events:none;}
+
+/* ═══ DATABASE PAGE ═══ */
+.sec-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;}
+.sec-title{font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;letter-spacing:0.12em;color:var(--cyan);text-transform:uppercase;}
+.filter-row{display:flex;gap:0.3rem;flex-wrap:wrap;}
+.chip{
+  padding:0.22rem 0.6rem;border-radius:2px;
+  font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;
+  cursor:pointer;border:1px solid var(--rim2);color:var(--txt3);background:transparent;transition:all 0.15s;
+}
+.chip.on{background:var(--cyan);color:var(--void);border-color:var(--cyan);}
+.chip:hover:not(.on){border-color:var(--cyan);color:var(--cyan);}
+
+.data-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:0.8rem;}
+.dc{background:var(--panel);border:1px solid var(--rim);border-radius:4px;overflow:hidden;transition:all 0.2s;position:relative;}
+.dc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity 0.2s;}
+.dc:hover{border-color:var(--rim2);box-shadow:0 4px 24px rgba(0,0,0,0.5);}
+.dc:hover::before{opacity:0.4;}
+.dc-top{padding:0.7rem 0.8rem 0.35rem;display:flex;justify-content:space-between;align-items:flex-start;}
+.dp{font-family:'Share Tech Mono',monospace;font-size:0.57rem;letter-spacing:0.07em;padding:0.13rem 0.42rem;border-radius:2px;}
+.dp-b{background:rgba(0,229,255,0.08);color:var(--cyan);border:1px solid rgba(0,229,255,0.18);}
+.dp-m{background:rgba(180,122,255,0.08);color:var(--purple);border:1px solid rgba(180,122,255,0.18);}
+.dc-acts{display:flex;gap:0.2rem;opacity:0;transition:opacity 0.15s;}
+.dc:hover .dc-acts{opacity:1;}
+.ia{width:20px;height:20px;border-radius:3px;border:1px solid var(--rim2);background:var(--panel2);color:var(--txt3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.57rem;transition:all 0.15s;}
+.ia:hover{background:var(--rim2);color:var(--txt);}
+.ia.del:hover{background:rgba(255,64,96,0.15);color:var(--red);border-color:var(--red);}
+.dc-body{padding:0 0.8rem 0.6rem;}
+.dc-title{font-family:'Orbitron',monospace;font-size:0.78rem;font-weight:700;letter-spacing:0.04em;margin-bottom:0.18rem;line-height:1.35;}
+.dc-creator{font-size:0.68rem;color:var(--txt2);margin-bottom:0.4rem;}
+.stars{display:flex;gap:2px;margin-bottom:0.3rem;}
+.s{color:var(--rim2);font-size:0.72rem;}
+.s.on{color:var(--amber);text-shadow:0 0 5px var(--amber);}
+.tags{display:flex;flex-wrap:wrap;gap:0.18rem;margin-bottom:0.3rem;}
+.tag{font-family:'Share Tech Mono',monospace;font-size:0.55rem;padding:0.08rem 0.32rem;background:var(--panel2);border:1px solid var(--rim);border-radius:2px;color:var(--txt3);}
+.dc-memo{font-size:0.72rem;color:var(--txt2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.dc-foot{padding:0.45rem 0.8rem;border-top:1px solid var(--rim);display:flex;justify-content:space-between;align-items:center;}
+.dc-date{font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--txt3);}
+.sp{font-family:'Share Tech Mono',monospace;font-size:0.55rem;padding:0.1rem 0.38rem;border-radius:2px;}
+.sp-d{background:rgba(0,255,157,0.08);color:var(--green);}
+.sp-w{background:rgba(255,179,0,0.08);color:var(--amber);}
+
+/* ═══ ENCOUNTER PAGE ═══ */
+.enc-hero{
+  background:var(--panel);border:1px solid var(--rim);border-radius:8px;
+  padding:1.5rem;text-align:center;margin-bottom:1.1rem;position:relative;overflow:hidden;
+}
+.enc-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,229,255,0.05),transparent 60%);}
+.enc-t{font-family:'Orbitron',monospace;font-size:1rem;font-weight:900;letter-spacing:0.12em;color:var(--cyan);text-shadow:0 0 20px rgba(0,229,255,0.4);margin-bottom:0.35rem;position:relative;}
+.enc-s{font-size:0.75rem;color:var(--txt2);margin-bottom:1rem;position:relative;}
+.scan-anim{
+  width:80px;height:80px;border-radius:50%;border:2px solid rgba(0,229,255,0.25);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin-bottom:1rem;position:relative;
+}
+.scan-anim::before,.scan-anim::after{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(0,229,255,0.1);
+}
+.scan-anim::after{inset:-16px;}
+.scan-anim.active{animation:scanPulse 1s ease-in-out infinite;border-color:var(--cyan);box-shadow:0 0 30px rgba(0,229,255,0.3);}
+@keyframes scanPulse{0%,100%{box-shadow:0 0 30px rgba(0,229,255,0.3)}50%{box-shadow:0 0 50px rgba(0,229,255,0.6)}}
+.scan-log{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--txt3);letter-spacing:0.05em;min-height:1.1em;margin-bottom:1rem;position:relative;}
+.scan-btn{
+  background:linear-gradient(135deg,var(--cyan2),var(--cyan));
+  color:var(--void);border:none;border-radius:4px;padding:0.65rem 1.75rem;
+  font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;
+  letter-spacing:0.12em;cursor:pointer;transition:all 0.2s;
+  box-shadow:0 4px 20px rgba(0,229,255,0.3);
+}
+.scan-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 28px rgba(0,229,255,0.45);}
+.scan-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+.enc-result{background:var(--panel);border:1px solid var(--rim2);border-radius:8px;overflow:hidden;margin-bottom:0.9rem;display:none;animation:fadeUp 0.4s ease;}
+.enc-result.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.enc-rhead{padding:0.9rem 1.1rem;background:var(--panel2);border-bottom:1px solid var(--rim);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
+.enc-alien{display:flex;align-items:center;gap:0.65rem;}
+.aav{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2px solid var(--rim2);background:var(--panel);flex-shrink:0;}
+.aname{font-family:'Orbitron',monospace;font-size:0.8rem;font-weight:700;letter-spacing:0.06em;}
+.aplanet{font-size:0.67rem;color:var(--txt2);}
+.escore-wrap{text-align:right;flex-shrink:0;}
+.escore{font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;line-height:1;}
+.escore.hi{color:var(--green);text-shadow:0 0 16px var(--green);}
+.escore.mi{color:var(--amber);text-shadow:0 0 16px var(--amber);}
+.escore.lo{color:var(--txt2);}
+.escore-l{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--txt3);}
+.enc-rbody{padding:0.9rem 1.1rem;}
+.enc-why{display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.75rem;}
+.why{font-family:'Share Tech Mono',monospace;font-size:0.6rem;padding:0.13rem 0.45rem;border-radius:2px;border:1px solid rgba(0,229,255,0.22);color:var(--cyan);background:rgba(0,229,255,0.06);letter-spacing:0.04em;}
+.sub-l{font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:0.4rem;}
+.shared-list,.rec-list{display:flex;flex-direction:column;gap:0.3rem;margin-bottom:0.75rem;}
+.srow{background:var(--panel2);border:1px solid var(--rim);border-radius:4px;padding:0.5rem 0.75rem;display:flex;align-items:center;gap:0.5rem;}
+.sm{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);flex-shrink:0;}
+.st{font-family:'Orbitron',monospace;font-size:0.72rem;font-weight:700;letter-spacing:0.03em;flex:1;}
+.sc{font-size:0.65rem;color:var(--txt3);}
+.rrow{background:linear-gradient(135deg,rgba(255,179,0,0.04),transparent);border:1px solid rgba(255,179,0,0.14);border-radius:4px;padding:0.5rem 0.75rem;display:flex;align-items:center;gap:0.5rem;}
+.ri{font-size:0.8rem;flex-shrink:0;}
+.rt{font-family:'Orbitron',monospace;font-size:0.72rem;font-weight:700;letter-spacing:0.03em;}
+.rc{font-size:0.63rem;color:var(--txt2);}
+.enc-rfoot{padding:0.65rem 1.1rem;border-top:1px solid var(--rim);display:flex;gap:0.45rem;justify-content:flex-end;}
+
+/* ═══ HISTORY ═══ */
+.hist-list{display:flex;flex-direction:column;gap:0.5rem;}
+.hrow{background:var(--panel);border:1px solid var(--rim);border-radius:6px;padding:0.75rem 0.9rem;display:flex;align-items:center;gap:0.75rem;cursor:pointer;transition:all 0.15s;}
+.hrow:hover{border-color:var(--rim2);}
+.hav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;border:1px solid var(--rim2);background:var(--panel2);flex-shrink:0;}
+.hn{font-family:'Orbitron',monospace;font-size:0.73rem;font-weight:700;letter-spacing:0.04em;}
+.hd{font-size:0.65rem;color:var(--txt3);margin-top:0.12rem;}
+.hr2{margin-left:auto;text-align:right;flex-shrink:0;}
+.hsc{font-family:'Orbitron',monospace;font-size:0.9rem;font-weight:700;}
+.hsc.hi{color:var(--green);}
+.hsc.mi{color:var(--amber);}
+.hsc.lo{color:var(--txt2);}
+.hdate{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--txt3);}
+
+/* ═══ BADGES PAGE ═══ */
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;}
+.bcard{background:var(--panel);border:1px solid var(--rim);border-radius:8px;padding:1.1rem 0.9rem;text-align:center;transition:all 0.2s;position:relative;overflow:hidden;}
+.bcard.earned{border-color:rgba(255,179,0,0.35);background:linear-gradient(135deg,var(--panel),rgba(255,179,0,0.025));}
+.bcard.earned::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,179,0,0.06),transparent 60%);}
+.bcard-icon{font-size:1.9rem;display:block;margin-bottom:0.5rem;filter:grayscale(1);opacity:0.2;transition:all 0.3s;position:relative;}
+.bcard.earned .bcard-icon{filter:none;opacity:1;}
+.bcard.earned:hover .bcard-icon{transform:scale(1.12) rotate(-5deg);}
+.bcard-name{font-family:'Orbitron',monospace;font-size:0.68rem;font-weight:700;letter-spacing:0.06em;margin-bottom:0.2rem;position:relative;}
+.bcard-desc{font-size:0.63rem;color:var(--txt3);line-height:1.4;position:relative;}
+.bcard-e{font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--amber);margin-top:0.35rem;display:none;}
+.bcard.earned .bcard-e{display:block;}
+.bcard-prog{font-size:0.6rem;color:var(--txt3);margin-top:0.3rem;}
+.bcard.earned .bcard-prog{display:none;}
+/* Alien evolution indicator */
+.bcard-evo{
+  position:absolute;top:0.4rem;right:0.4rem;
+  font-size:0.6rem;
+  background:rgba(0,229,255,0.15);
+  border:1px solid rgba(0,229,255,0.3);
+  border-radius:2px;padding:0.08rem 0.3rem;
+  font-family:'Share Tech Mono',monospace;
+  color:var(--cyan);letter-spacing:0.04em;
+  display:none;
+}
+.bcard.earned .bcard-evo{display:block;}
+
+/* ═══ MODAL ═══ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.2s;backdrop-filter:blur(6px);}
+.overlay.on{opacity:1;pointer-events:all;}
+.modal{background:var(--panel);border:1px solid var(--rim2);border-radius:10px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;transform:translateY(14px);transition:transform 0.2s;box-shadow:0 24px 64px rgba(0,0,0,0.6),0 0 0 1px rgba(0,229,255,0.08);}
+.overlay.on .modal{transform:translateY(0);}
+.modal::-webkit-scrollbar{width:3px;}
+.modal::-webkit-scrollbar-thumb{background:var(--rim2);}
+.mh{padding:1rem 1.3rem 0.85rem;border-bottom:1px solid var(--rim);display:flex;justify-content:space-between;align-items:center;position:relative;}
+.mh::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.3;}
+.mt{font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;letter-spacing:0.1em;color:var(--cyan);}
+.mx{width:24px;height:24px;border-radius:3px;border:1px solid var(--rim2);background:var(--panel2);color:var(--txt3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.82rem;transition:all 0.15s;}
+.mx:hover{background:var(--rim2);color:var(--txt);}
+.mb2{padding:1rem 1.3rem;}
+.mf{padding:0.8rem 1.3rem;border-top:1px solid var(--rim);display:flex;justify-content:flex-end;gap:0.45rem;}
+.fg{margin-bottom:0.8rem;}
+.fg label{display:block;font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:0.28rem;}
+.fg input,.fg select,.fg textarea{width:100%;padding:0.48rem 0.72rem;background:var(--deep);border:1px solid var(--rim2);border-radius:4px;color:var(--txt);font-family:'Noto Sans JP',sans-serif;font-size:0.8rem;outline:none;transition:border 0.15s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--cyan);}
+.fg select option{background:var(--panel);}
+.fg textarea{resize:vertical;min-height:64px;line-height:1.55;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;}
+.spick{display:flex;gap:4px;padding:0.18rem 0;}
+.sps{font-size:1.3rem;cursor:pointer;color:var(--rim2);transition:all 0.1s;}
+.sps.on{color:var(--amber);text-shadow:0 0 8px var(--amber);}
+.sps:hover{transform:scale(1.15);}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--panel2);border:1px solid var(--rim2);color:var(--txt);padding:0.55rem 1rem;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:0.68rem;z-index:500;opacity:0;transition:all 0.25s;white-space:nowrap;box-shadow:0 8px 32px rgba(0,0,0,0.5);letter-spacing:0.05em;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.c{border-color:var(--cyan);color:var(--cyan);}
+.toast.g{border-color:var(--green);color:var(--green);}
+.toast.a{border-color:var(--amber);color:var(--amber);}
+
+/* BADGE POPUP */
+.pop-dim{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:10000;display:none;backdrop-filter:blur(6px);}
+.pop-dim.on{display:block;}
+.bpop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.75);background:linear-gradient(160deg,#111828,#070a12);border:2px solid var(--amber);border-radius:16px;padding:1.5rem 1.5rem 1.75rem;z-index:10001;text-align:center;opacity:0;pointer-events:none;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 0 40px rgba(255,179,0,0.35),0 24px 64px rgba(0,0,0,0.8);width:min(340px,92vw);}
+.bpop.on{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:all;}
+.bpsub{font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;color:var(--amber);text-transform:uppercase;margin-bottom:0.6rem;}
+.bp-alien-wrap{position:relative;width:110px;height:140px;margin:0 auto 0.5rem;animation:bpAlienIn 0.6s 0.1s both;}
+@keyframes bpAlienIn{from{transform:translateY(16px) scale(0.8);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.bp-alien-wrap svg{width:100%;height:100%;filter:drop-shadow(0 0 18px rgba(0,255,157,0.55));}
+.bp-glow-ring{position:absolute;width:100px;height:100px;border-radius:50%;border:1px solid rgba(255,179,0,0.3);top:50%;left:50%;transform:translate(-50%,-50%);animation:bpRing 2s ease-in-out infinite;}
+.bp-glow-ring2{position:absolute;width:136px;height:136px;border-radius:50%;border:1px solid rgba(255,179,0,0.1);top:50%;left:50%;transform:translate(-50%,-50%);animation:bpRing 2s ease-in-out infinite 0.5s;}
+@keyframes bpRing{0%,100%{opacity:0.4}50%{opacity:0.9}}
+.bp-badge-icon{font-size:1.8rem;display:inline-block;animation:bpBounce 0.5s 0.3s both;margin-bottom:0.35rem;}
+@keyframes bpBounce{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.bpname{font-family:'Orbitron',monospace;font-size:0.95rem;font-weight:900;letter-spacing:0.1em;color:var(--amber);margin-bottom:0.25rem;}
+.bpdesc{font-size:0.73rem;color:var(--txt2);margin-bottom:0.35rem;line-height:1.5;}
+.bpevo{font-family:'Share Tech Mono',monospace;font-size:0.63rem;color:var(--cyan);margin-bottom:0.9rem;letter-spacing:0.05em;background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.18);border-radius:4px;padding:0.28rem 0.6rem;display:inline-block;}
+.bpdismiss{font-family:'Share Tech Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:var(--txt3);cursor:pointer;text-transform:uppercase;}
+.bpdismiss:hover{color:var(--txt);}
+
+/* TX overlay */
+.tx{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.92);display:none;flex-direction:column;align-items:center;justify-content:center;gap:0.85rem;backdrop-filter:blur(4px);}
+.tx.on{display:flex;}
+.txring{width:100px;height:100px;border-radius:50%;border:2px solid var(--cyan);box-shadow:0 0 30px rgba(0,229,255,0.4);display:flex;align-items:center;justify-content:center;font-size:2rem;animation:txp 0.9s ease-in-out infinite;}
+@keyframes txp{0%,100%{box-shadow:0 0 30px rgba(0,229,255,0.4),0 0 0 0 rgba(0,229,255,0.3)}50%{box-shadow:0 0 50px rgba(0,229,255,0.6),0 0 0 18px rgba(0,229,255,0)}}
+.txtext{font-family:'Orbitron',monospace;font-size:0.72rem;font-weight:700;letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;}
+.txlog{font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--txt3);letter-spacing:0.06em;min-height:1.1em;}
+
+/* EMPTY */
+.empty{text-align:center;padding:3.5rem 2rem;color:var(--txt3);}
+.empty-i{font-size:2.5rem;margin-bottom:0.85rem;opacity:0.3;}
+.empty-t{font-family:'Orbitron',monospace;font-size:0.82rem;letter-spacing:0.08em;margin-bottom:0.4rem;}
+.empty-s{font-size:0.73rem;margin-bottom:1.25rem;}
+
+@media(max-width:580px){
+  .fg2{grid-template-columns:1fr;}
+  .data-grid{grid-template-columns:1fr;}
+  .badges-grid{grid-template-columns:repeat(2,1fr);}
+  .home-hud{flex-direction:column;gap:0.3rem;}
+  .hhud-panel{padding:0.4rem 0.7rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🛸 XENOLOG</div>
+  <div class="hud">
+    <div class="hud-v">DATA <span id="hudCount">0</span></div>
+    <div class="hud-v">CONTACT <span id="hudEnc">0</span></div>
+    <button class="btn btn-c" onclick="openModal()">＋ LOG</button>
+  </div>
+</header>
+
+<div class="mbar">
+  <div class="mbar-inner">
+    <div class="ml">帰還準備</div>
+    <div class="ptrack"><div class="pfill" id="pfill" style="width:0%"></div></div>
+    <div class="ppct" id="ppct">0%</div>
+    <div class="pphase" id="pphase">PHASE 1</div>
+  </div>
+</div>
+
+<nav>
+  <button class="nb on" onclick="goPage('home',this)">🛸 宇宙船</button>
+  <button class="nb" onclick="goPage('db',this)">📀 データ</button>
+  <button class="nb" onclick="goPage('enc',this)">📡 すれ違い</button>
+  <button class="nb" onclick="goPage('hist',this)">🌌 履歴</button>
+  <button class="nb" onclick="goPage('bdg',this)">🏅 バッジ <span class="dot" id="newBadgeDot" style="display:none"></span></button>
+</nav>
+
+<div class="content">
+
+  <!-- ══════════ HOME ══════════ -->
+  <div id="home" class="page on">
+    <div class="ship-scene" id="shipScene">
+      <div class="space-bg"></div>
+      <div class="stars-layer" id="starsLayer"></div>
+
+      <!-- Nebula glows -->
+      <div class="nebula" style="width:300px;height:200px;background:rgba(0,229,255,0.04);top:10%;left:-5%;"></div>
+      <div class="nebula" style="width:250px;height:180px;background:rgba(180,122,255,0.04);top:20%;right:-5%;"></div>
+      <div class="nebula" style="width:200px;height:150px;background:rgba(0,255,157,0.03);bottom:30%;left:20%;"></div>
+
+      <!-- HUD PANELS -->
+      <div class="home-hud">
+        <div class="hhud-panel">
+          <div class="hhud-title">収集データ</div>
+          <div class="hhud-val" id="homeDone">0</div>
+          <div class="hhud-sub">地球文化サンプル</div>
+        </div>
+        <div class="hhud-panel">
+          <div class="hhud-title">すれ違い</div>
+          <div class="hhud-val" id="homeEnc">0</div>
+          <div class="hhud-sub">通信記録</div>
+        </div>
+        <div class="hhud-panel">
+          <div class="hhud-title">文化理解度</div>
+          <div class="hhud-val" id="homeLevel" style="color:var(--amber)">LV.1</div>
+          <div class="hhud-sub" id="homeLevelName">宇宙の新人</div>
+        </div>
+      </div>
+
+      <!-- SPACESHIP SVG -->
+      <div class="ship-wrap">
+        <div class="spaceship">
+          <svg class="ship-svg" viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Engine exhaust -->
+            <ellipse cx="280" cy="275" rx="55" ry="12" fill="rgba(0,229,255,0.15)" class="eng-base"/>
+            <ellipse cx="280" cy="278" rx="35" ry="8" fill="rgba(0,229,255,0.25)">
+              <animate attributeName="rx" values="35;42;35" dur="1.4s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.7;1;0.7" dur="1.4s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="280" cy="280" rx="20" ry="5" fill="rgba(100,255,255,0.6)">
+              <animate attributeName="rx" values="20;26;20" dur="1s" repeatCount="indefinite"/>
+            </ellipse>
+
+            <!-- Main hull — lower -->
+            <ellipse cx="280" cy="220" rx="200" ry="48" fill="#0a1424" stroke="#1a3060" stroke-width="1.5"/>
+            <ellipse cx="280" cy="218" rx="198" ry="46" fill="url(#hullGrad)"/>
+
+            <!-- Hull detail lines -->
+            <ellipse cx="280" cy="218" rx="160" ry="36" fill="none" stroke="rgba(0,229,255,0.12)" stroke-width="1"/>
+            <ellipse cx="280" cy="218" rx="120" ry="26" fill="none" stroke="rgba(0,229,255,0.08)" stroke-width="1"/>
+
+            <!-- Window strip -->
+            <ellipse cx="280" cy="210" rx="130" ry="10" fill="rgba(0,229,255,0.06)" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+
+            <!-- Windows -->
+            <circle cx="220" cy="210" r="5" fill="rgba(0,255,200,0.5)" stroke="rgba(0,229,255,0.4)" stroke-width="1">
+              <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="260" cy="208" r="6" fill="rgba(0,200,255,0.6)" stroke="rgba(0,229,255,0.5)" stroke-width="1">
+              <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="300" cy="208" r="7" fill="rgba(180,122,255,0.5)" stroke="rgba(180,122,255,0.4)" stroke-width="1">
+              <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="340" cy="208" r="5" fill="rgba(0,255,200,0.5)" stroke="rgba(0,229,255,0.4)" stroke-width="1">
+              <animate attributeName="opacity" values="0.8;1;0.8" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- Upper dome -->
+            <ellipse cx="280" cy="200" rx="195" ry="44" fill="#0a1424" stroke="#1a3060" stroke-width="1"/>
+            <path d="M 130 180 Q 200 100 280 90 Q 360 100 430 180" fill="url(#domeGrad)" stroke="rgba(0,229,255,0.2)" stroke-width="1.5"/>
+            <path d="M 155 178 Q 210 115 280 106 Q 350 115 405 178" fill="none" stroke="rgba(0,229,255,0.08)" stroke-width="1"/>
+
+            <!-- Dome interior light -->
+            <ellipse cx="280" cy="140" rx="60" ry="25" fill="rgba(0,229,255,0.04)">
+              <animate attributeName="opacity" values="0.5;1;0.5" dur="4s" repeatCount="indefinite"/>
+            </ellipse>
+
+            <!-- Cockpit glass -->
+            <path d="M 220 170 Q 250 120 280 112 Q 310 120 340 170 Z" fill="rgba(0,180,255,0.15)" stroke="rgba(0,229,255,0.3)" stroke-width="1.5"/>
+            <path d="M 245 168 Q 262 138 280 132 Q 298 138 315 168" fill="none" stroke="rgba(0,255,255,0.15)" stroke-width="1"/>
+
+            <!-- Landing legs -->
+            <line x1="160" y1="255" x2="130" y2="285" stroke="rgba(0,229,255,0.3)" stroke-width="2"/>
+            <ellipse cx="125" cy="287" rx="18" ry="5" fill="rgba(0,229,255,0.15)" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+            <line x1="400" y1="255" x2="430" y2="285" stroke="rgba(0,229,255,0.3)" stroke-width="2"/>
+            <ellipse cx="435" cy="287" rx="18" ry="5" fill="rgba(0,229,255,0.15)" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+
+            <!-- Side lights -->
+            <circle cx="85" cy="218" r="5" fill="rgba(255,64,96,0.8)" stroke="rgba(255,64,96,0.4)" stroke-width="1">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="475" cy="218" r="5" fill="rgba(0,255,157,0.8)" stroke="rgba(0,255,157,0.4)" stroke-width="1">
+              <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- Antenna -->
+            <line x1="280" y1="90" x2="280" y2="60" stroke="rgba(0,229,255,0.4)" stroke-width="1.5"/>
+            <circle cx="280" cy="57" r="4" fill="var(--cyan)">
+              <animate attributeName="opacity" values="1;0.2;1" dur="0.8s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="4;6;4" dur="0.8s" repeatCount="indefinite"/>
+            </circle>
+
+            <defs>
+              <radialGradient id="hullGrad" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="#162040"/>
+                <stop offset="100%" stop-color="#0a1424"/>
+              </radialGradient>
+              <radialGradient id="domeGrad" cx="50%" cy="60%" r="60%">
+                <stop offset="0%" stop-color="#1a2a50"/>
+                <stop offset="100%" stop-color="#0c1830"/>
+              </radialGradient>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <!-- ALIEN CHARACTER -->
+      <div class="alien-stage">
+        <div class="alien-wrap" onclick="alienClick()" id="alienWrap">
+          <div class="speech" id="speechBubble">...</div>
+          <!-- Alien SVG — evolves with badges -->
+          <svg id="alienSvg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg" style="width:min(140px,25vw);height:auto;filter:drop-shadow(0 0 14px rgba(0,255,157,0.35))">
+
+            <!-- BODY BASE -->
+            <ellipse cx="80" cy="140" rx="38" ry="42" fill="url(#bodyGrad)" stroke="rgba(0,255,157,0.3)" stroke-width="1.5"/>
+
+            <!-- EVO LAYER: TSHIRT (lv2+) -->
+            <g id="evShirt" opacity="0">
+              <path d="M 48 130 Q 60 118 80 116 Q 100 118 112 130 L 116 175 Q 80 180 44 175 Z" fill="url(#shirtGrad)" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+              <!-- shirt detail -->
+              <text x="80" y="160" text-anchor="middle" font-size="11" fill="rgba(0,229,255,0.6)" font-family="Share Tech Mono">📀</text>
+            </g>
+
+            <!-- EVO LAYER: JACKET (lv3+) -->
+            <g id="evJacket" opacity="0">
+              <path d="M 44 128 Q 55 112 80 110 Q 105 112 116 128 L 120 178 Q 80 184 40 178 Z" fill="url(#jacketGrad)" stroke="rgba(180,122,255,0.35)" stroke-width="1.5"/>
+              <path d="M 80 110 L 80 182" stroke="rgba(180,122,255,0.3)" stroke-width="1"/>
+              <rect x="54" y="128" width="10" height="14" rx="2" fill="rgba(255,179,0,0.5)" stroke="rgba(255,179,0,0.3)" stroke-width="1"/>
+            </g>
+
+            <!-- EVO LAYER: CAPE (lv4+) -->
+            <g id="evCape" opacity="0">
+              <path d="M 48 120 Q 20 160 22 200 L 40 195 Q 44 165 55 145" fill="url(#capeGrad)" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+              <path d="M 112 120 Q 140 160 138 200 L 120 195 Q 116 165 105 145" fill="url(#capeGrad)" stroke="rgba(0,229,255,0.2)" stroke-width="1"/>
+            </g>
+
+            <!-- ARMS -->
+            <ellipse cx="42" cy="145" rx="10" ry="22" fill="url(#armGrad)" stroke="rgba(0,255,157,0.2)" stroke-width="1" transform="rotate(-10 42 145)"/>
+            <ellipse cx="118" cy="145" rx="10" ry="22" fill="url(#armGrad)" stroke="rgba(0,255,157,0.2)" stroke-width="1" transform="rotate(10 118 145)"/>
+
+            <!-- EVO LAYER: BOOK IN HAND (lv1+) -->
+            <g id="evBook" opacity="0">
+              <rect x="24" y="155" width="20" height="26" rx="2" fill="#1a3a6a" stroke="rgba(0,229,255,0.4)" stroke-width="1"/>
+              <line x1="34" y1="157" x2="34" y2="179" stroke="rgba(0,229,255,0.3)" stroke-width="1"/>
+              <line x1="27" y1="162" x2="33" y2="162" stroke="rgba(0,229,255,0.15)" stroke-width="0.5"/>
+              <line x1="27" y1="166" x2="33" y2="166" stroke="rgba(0,229,255,0.15)" stroke-width="0.5"/>
+            </g>
+
+            <!-- EVO LAYER: HEADPHONES (lv2+) -->
+            <g id="evHeadphones" opacity="0">
+              <path d="M 54 64 Q 50 45 80 42 Q 110 45 106 64" fill="none" stroke="rgba(0,229,255,0.6)" stroke-width="3" stroke-linecap="round"/>
+              <rect x="48" y="62" width="12" height="10" rx="4" fill="rgba(0,229,255,0.5)" stroke="rgba(0,229,255,0.7)" stroke-width="1"/>
+              <rect x="100" y="62" width="12" height="10" rx="4" fill="rgba(0,229,255,0.5)" stroke="rgba(0,229,255,0.7)" stroke-width="1"/>
+            </g>
+
+            <!-- EVO LAYER: SUNGLASSES (lv3+) -->
+            <g id="evGlasses" opacity="0">
+              <rect x="57" y="80" width="18" height="11" rx="5" fill="rgba(180,122,255,0.4)" stroke="rgba(180,122,255,0.8)" stroke-width="1.5"/>
+              <rect x="85" y="80" width="18" height="11" rx="5" fill="rgba(180,122,255,0.4)" stroke="rgba(180,122,255,0.8)" stroke-width="1.5"/>
+              <line x1="75" y1="85" x2="85" y2="85" stroke="rgba(180,122,255,0.8)" stroke-width="1.5"/>
+              <line x1="50" y1="85" x2="57" y2="85" stroke="rgba(180,122,255,0.6)" stroke-width="1"/>
+              <line x1="103" y1="85" x2="110" y2="85" stroke="rgba(180,122,255,0.6)" stroke-width="1"/>
+            </g>
+
+            <!-- EVO LAYER: CROWN (lv5) -->
+            <g id="evCrown" opacity="0">
+              <path d="M 58 58 L 58 44 L 68 52 L 80 40 L 92 52 L 102 44 L 102 58 Z" fill="url(#crownGrad)" stroke="rgba(255,179,0,0.8)" stroke-width="1.5"/>
+              <circle cx="80" cy="41" r="3" fill="var(--amber)"><animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/></circle>
+              <circle cx="68" cy="52" r="2" fill="var(--cyan)"/>
+              <circle cx="92" cy="52" r="2" fill="var(--cyan)"/>
+            </g>
+
+            <!-- HEAD -->
+            <ellipse cx="80" cy="72" rx="34" ry="36" fill="url(#headGrad)" stroke="rgba(0,255,157,0.25)" stroke-width="1.5"/>
+
+            <!-- HEAD TEXTURE -->
+            <ellipse cx="80" cy="72" rx="28" ry="30" fill="none" stroke="rgba(0,255,157,0.06)" stroke-width="1"/>
+
+            <!-- EYES -->
+            <ellipse cx="65" cy="68" rx="9" ry="11" fill="#030812"/>
+            <ellipse cx="95" cy="68" rx="9" ry="11" fill="#030812"/>
+            <!-- Eye glow -->
+            <ellipse cx="65" cy="68" rx="6" ry="7" fill="url(#eyeGrad)" id="eye1">
+              <animate attributeName="ry" values="7;2;7" dur="4s" repeatCount="indefinite"/>
+            </ellipse>
+            <ellipse cx="95" cy="68" rx="6" ry="7" fill="url(#eyeGrad)" id="eye2">
+              <animate attributeName="ry" values="7;2;7" dur="4s" begin="0.2s" repeatCount="indefinite"/>
+            </ellipse>
+            <!-- Eye shine -->
+            <circle cx="67" cy="65" r="2" fill="rgba(255,255,255,0.6)"/>
+            <circle cx="97" cy="65" r="2" fill="rgba(255,255,255,0.6)"/>
+
+            <!-- EVO LAYER: SMILE (lv1+) — learned from earth -->
+            <g id="evSmile" opacity="0">
+              <path d="M 68 88 Q 80 97 92 88" fill="none" stroke="rgba(0,255,157,0.7)" stroke-width="2" stroke-linecap="round"/>
+            </g>
+            <!-- Default mouth -->
+            <line x1="72" y1="90" x2="88" y2="90" stroke="rgba(0,255,157,0.3)" stroke-width="1.5" stroke-linecap="round" id="defaultMouth"/>
+
+            <!-- Antenna on head -->
+            <line x1="80" y1="37" x2="72" y2="18" stroke="rgba(0,255,157,0.5)" stroke-width="1.5"/>
+            <circle cx="70" cy="15" r="4" fill="rgba(0,255,157,0.8)">
+              <animate attributeName="opacity" values="0.5;1;0.5" dur="1.2s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="4;5.5;4" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- Body detail circles -->
+            <circle cx="72" cy="148" r="3" fill="rgba(0,229,255,0.3)">
+              <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="80" cy="152" r="2" fill="rgba(0,229,255,0.2)"/>
+            <circle cx="88" cy="148" r="3" fill="rgba(0,229,255,0.3)">
+              <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- LEGS -->
+            <ellipse cx="65" cy="185" rx="12" ry="16" fill="url(#legGrad)" stroke="rgba(0,255,157,0.15)" stroke-width="1"/>
+            <ellipse cx="95" cy="185" rx="12" ry="16" fill="url(#legGrad)" stroke="rgba(0,255,157,0.15)" stroke-width="1"/>
+
+            <!-- EVO LAYER: SHOES (lv2+) -->
+            <g id="evShoes" opacity="0">
+              <ellipse cx="65" cy="198" rx="16" ry="6" fill="#1a1a3a" stroke="rgba(180,122,255,0.4)" stroke-width="1"/>
+              <ellipse cx="95" cy="198" rx="16" ry="6" fill="#1a1a3a" stroke="rgba(180,122,255,0.4)" stroke-width="1"/>
+              <line x1="55" y1="198" x2="61" y2="198" stroke="rgba(180,122,255,0.4)" stroke-width="1"/>
+              <line x1="85" y1="198" x2="91" y2="198" stroke="rgba(180,122,255,0.4)" stroke-width="1"/>
+            </g>
+
+            <defs>
+              <radialGradient id="headGrad" cx="40%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#1a4a32"/>
+                <stop offset="100%" stop-color="#0a2818"/>
+              </radialGradient>
+              <radialGradient id="bodyGrad" cx="40%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#163828"/>
+                <stop offset="100%" stop-color="#081a12"/>
+              </radialGradient>
+              <radialGradient id="armGrad" cx="40%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#143020"/>
+                <stop offset="100%" stop-color="#071410"/>
+              </radialGradient>
+              <radialGradient id="legGrad" cx="40%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#143020"/>
+                <stop offset="100%" stop-color="#071410"/>
+              </radialGradient>
+              <radialGradient id="eyeGrad" cx="40%" cy="35%" r="65%">
+                <stop offset="0%" stop-color="#00ffcc"/>
+                <stop offset="100%" stop-color="#00aa88"/>
+              </radialGradient>
+              <linearGradient id="shirtGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#0a2040"/>
+                <stop offset="100%" stop-color="#061428"/>
+              </linearGradient>
+              <linearGradient id="jacketGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#1a0a30"/>
+                <stop offset="100%" stop-color="#0a0818"/>
+              </linearGradient>
+              <linearGradient id="capeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="rgba(0,229,255,0.25)"/>
+                <stop offset="100%" stop-color="rgba(0,100,180,0.1)"/>
+              </linearGradient>
+              <linearGradient id="crownGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffcc00"/>
+                <stop offset="100%" stop-color="#ff8800"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <!-- Evolution status overlay on ship page -->
+        <div class="evo-panel">
+          <div class="evo-title">EVOLUTION STATUS</div>
+          <div class="evo-badges" id="evoBadgeRow"></div>
+          <div class="evo-level" id="evoLevelLabel">LV.1 宇宙の新人</div>
+        </div>
+      </div>
+
+      <!-- HOME ACTIONS -->
+      <div class="home-actions">
+        <button class="btn btn-c" onclick="openModal()" style="font-size:0.62rem">＋ データ記録</button>
+        <button class="btn btn-a" onclick="goPage('enc',document.querySelectorAll('.nb')[2])" style="font-size:0.62rem">📡 すれ違い</button>
+      </div>
+
+    </div>
+  </div><!-- /home -->
+
+  <!-- ══════════ DATABASE ══════════ -->
+  <div id="db" class="page">
+    <div class="inner">
+      <div class="sec-head">
+        <div class="sec-title">地球文化データベース</div>
+        <div class="filter-row">
+          <button class="chip on" onclick="setF(this,'all')">ALL</button>
+          <button class="chip" onclick="setF(this,'book')">📚 本</button>
+          <button class="chip" onclick="setF(this,'movie')">🎬 映画</button>
+          <button class="chip" onclick="setF(this,'done')">✅ 取得済</button>
+          <button class="chip" onclick="setF(this,'want')">⭐ 目標</button>
+        </div>
+      </div>
+      <div class="data-grid" id="dataGrid"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ ENCOUNTER ══════════ -->
+  <div id="enc" class="page">
+    <div class="inner">
+      <div class="enc-hero">
+        <div class="enc-t">📡 すれ違い通信システム</div>
+        <div class="enc-s">他の宇宙人と文化データを照合し、一致度を計測します</div>
+        <div>
+          <div class="scan-anim" id="scanAnim">📡</div>
+        </div>
+        <div class="scan-log" id="scanLog">待機中 — スキャンを開始してください</div>
+        <button class="scan-btn" id="scanBtn" onclick="startEnc()">▶ スキャン開始</button>
+      </div>
+      <div class="enc-result" id="encResult"></div>
+      <div id="noEncYet" style="text-align:center;padding:0.85rem;font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--txt3);letter-spacing:0.06em;">スキャン結果はここに表示されます</div>
+    </div>
+  </div>
+
+  <!-- ══════════ HISTORY ══════════ -->
+  <div id="hist" class="page">
+    <div class="inner">
+      <div class="sec-head">
+        <div class="sec-title">通信履歴</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--txt3)" id="histTotal"></div>
+      </div>
+      <div class="hist-list" id="histList">
+        <div class="empty"><div class="empty-i">🌌</div><div class="empty-t">NO HISTORY</div><div class="empty-s">すれ違い通信を試してください</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ BADGES ══════════ -->
+  <div id="bdg" class="page">
+    <div class="inner">
+      <div style="background:var(--panel);border:1px solid var(--rim);border-radius:8px;padding:1rem 1.2rem;margin-bottom:1.1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+        <div style="font-size:1.6rem">🏅</div>
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:0.8rem;font-weight:700;letter-spacing:0.1em;color:var(--amber);margin-bottom:0.18rem;">BADGE COLLECTION</div>
+          <div style="font-size:0.72rem;color:var(--txt2);">バッジが増えるほど宇宙人の外見が進化します！</div>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:1.1rem;">
+          <div style="text-align:center;">
+            <div style="font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:var(--amber);" id="bEarned">0</div>
+            <div style="font-size:0.58rem;color:var(--txt3);font-family:'Share Tech Mono',monospace;letter-spacing:0.06em;">獲得</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-family:'Orbitron',monospace;font-size:1.2rem;font-weight:900;color:var(--txt3);" id="bTotal">0</div>
+            <div style="font-size:0.58rem;color:var(--txt3);font-family:'Share Tech Mono',monospace;letter-spacing:0.06em;">合計</div>
+          </div>
+        </div>
+      </div>
+      <div class="badges-grid" id="badgeGrid"></div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- MODAL -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <div class="mh">
+      <div class="mt" id="mTitle">▸ データ登録</div>
+      <button class="mx" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mb2">
+      <div class="fg2">
+        <div class="fg"><label>カテゴリ</label>
+          <select id="fCat"><option value="book">📚 本</option><option value="movie">🎬 映画</option></select>
+        </div>
+        <div class="fg"><label>ステータス</label>
+          <select id="fStat"><option value="done">✅ 取得済み</option><option value="want">⭐ 目標データ</option></select>
+        </div>
+      </div>
+      <div class="fg"><label>タイトル *</label><input type="text" id="fTitle" placeholder="例: ノルウェイの森"></div>
+      <div class="fg"><label>著者 / 監督</label><input type="text" id="fCreator" placeholder="例: 村上春樹"></div>
+      <div class="fg"><label>データ品質（評価）</label>
+        <div class="spick" id="spick">
+          <span class="sps" data-v="1" onclick="setStar(1)">★</span>
+          <span class="sps" data-v="2" onclick="setStar(2)">★</span>
+          <span class="sps" data-v="3" onclick="setStar(3)">★</span>
+          <span class="sps" data-v="4" onclick="setStar(4)">★</span>
+          <span class="sps" data-v="5" onclick="setStar(5)">★</span>
+        </div>
+      </div>
+      <div class="fg"><label>タグ（カンマ区切り）</label><input type="text" id="fTags" placeholder="例: SF, ディストピア, 感動"></div>
+      <div class="fg"><label>分析メモ</label><textarea id="fMemo" placeholder="地球文化の観察記録..."></textarea></div>
+      <div class="fg"><label>記録日</label><input type="date" id="fDate"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-c" onclick="saveItem()">▸ 記録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- TX OVERLAY -->
+<div class="tx" id="tx">
+  <div class="txring">📡</div>
+  <div class="txtext">SCANNING</div>
+  <div class="txlog" id="txlog">信号を探しています...</div>
+</div>
+
+<!-- BADGE POPUP -->
+<div class="pop-dim" id="popDim" onclick="closePop()"></div>
+<div class="bpop" id="bpop">
+  <div class="bpsub">★ 外見進化 ★</div>
+  <div class="bp-alien-wrap">
+    <div class="bp-glow-ring"></div>
+    <div class="bp-glow-ring2"></div>
+    <svg id="bpAlienSvg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- reuses same alien SVG structure, layers toggled by JS -->
+      <ellipse cx="80" cy="140" rx="38" ry="42" fill="url(#bpBodyG)" stroke="rgba(0,255,157,0.3)" stroke-width="1.5"/>
+      <g id="bp_evShirt" opacity="0"><path d="M 48 130 Q 60 118 80 116 Q 100 118 112 130 L 116 175 Q 80 180 44 175 Z" fill="url(#bpShirtG)" stroke="rgba(0,229,255,0.3)" stroke-width="1"/><text x="80" y="160" text-anchor="middle" font-size="11" fill="rgba(0,229,255,0.6)" font-family="Share Tech Mono">📀</text></g>
+      <g id="bp_evJacket" opacity="0"><path d="M 44 128 Q 55 112 80 110 Q 105 112 116 128 L 120 178 Q 80 184 40 178 Z" fill="url(#bpJacketG)" stroke="rgba(180,122,255,0.35)" stroke-width="1.5"/><path d="M 80 110 L 80 182" stroke="rgba(180,122,255,0.3)" stroke-width="1"/><rect x="54" y="128" width="10" height="14" rx="2" fill="rgba(255,179,0,0.5)" stroke="rgba(255,179,0,0.3)" stroke-width="1"/></g>
+      <g id="bp_evCape" opacity="0"><path d="M 48 120 Q 20 160 22 200 L 40 195 Q 44 165 55 145" fill="url(#bpCapeG)" stroke="rgba(0,229,255,0.2)" stroke-width="1"/><path d="M 112 120 Q 140 160 138 200 L 120 195 Q 116 165 105 145" fill="url(#bpCapeG)" stroke="rgba(0,229,255,0.2)" stroke-width="1"/></g>
+      <ellipse cx="42" cy="145" rx="10" ry="22" fill="url(#bpArmG)" stroke="rgba(0,255,157,0.2)" stroke-width="1" transform="rotate(-10 42 145)"/>
+      <ellipse cx="118" cy="145" rx="10" ry="22" fill="url(#bpArmG)" stroke="rgba(0,255,157,0.2)" stroke-width="1" transform="rotate(10 118 145)"/>
+      <g id="bp_evBook" opacity="0"><rect x="24" y="155" width="20" height="26" rx="2" fill="#1a3a6a" stroke="rgba(0,229,255,0.4)" stroke-width="1"/><line x1="34" y1="157" x2="34" y2="179" stroke="rgba(0,229,255,0.3)" stroke-width="1"/></g>
+      <g id="bp_evHeadphones" opacity="0"><path d="M 54 64 Q 50 45 80 42 Q 110 45 106 64" fill="none" stroke="rgba(0,229,255,0.7)" stroke-width="3" stroke-linecap="round"/><rect x="48" y="62" width="12" height="10" rx="4" fill="rgba(0,229,255,0.5)" stroke="rgba(0,229,255,0.7)" stroke-width="1"/><rect x="100" y="62" width="12" height="10" rx="4" fill="rgba(0,229,255,0.5)" stroke="rgba(0,229,255,0.7)" stroke-width="1"/></g>
+      <g id="bp_evGlasses" opacity="0"><rect x="57" y="80" width="18" height="11" rx="5" fill="rgba(180,122,255,0.45)" stroke="rgba(180,122,255,0.9)" stroke-width="1.5"/><rect x="85" y="80" width="18" height="11" rx="5" fill="rgba(180,122,255,0.45)" stroke="rgba(180,122,255,0.9)" stroke-width="1.5"/><line x1="75" y1="85" x2="85" y2="85" stroke="rgba(180,122,255,0.9)" stroke-width="1.5"/><line x1="50" y1="85" x2="57" y2="85" stroke="rgba(180,122,255,0.6)" stroke-width="1"/><line x1="103" y1="85" x2="110" y2="85" stroke="rgba(180,122,255,0.6)" stroke-width="1"/></g>
+      <g id="bp_evCrown" opacity="0"><path d="M 58 58 L 58 44 L 68 52 L 80 40 L 92 52 L 102 44 L 102 58 Z" fill="url(#bpCrownG)" stroke="rgba(255,179,0,0.8)" stroke-width="1.5"/><circle cx="80" cy="41" r="3" fill="var(--amber)"/><circle cx="68" cy="52" r="2" fill="var(--cyan)"/><circle cx="92" cy="52" r="2" fill="var(--cyan)"/></g>
+      <ellipse cx="80" cy="72" rx="34" ry="36" fill="url(#bpHeadG)" stroke="rgba(0,255,157,0.25)" stroke-width="1.5"/>
+      <ellipse cx="65" cy="68" rx="9" ry="11" fill="#030812"/>
+      <ellipse cx="95" cy="68" rx="9" ry="11" fill="#030812"/>
+      <ellipse cx="65" cy="68" rx="6" ry="7" fill="url(#bpEyeG)"><animate attributeName="ry" values="7;2;7" dur="3s" repeatCount="indefinite"/></ellipse>
+      <ellipse cx="95" cy="68" rx="6" ry="7" fill="url(#bpEyeG)"><animate attributeName="ry" values="7;2;7" dur="3s" begin="0.2s" repeatCount="indefinite"/></ellipse>
+      <circle cx="67" cy="65" r="2" fill="rgba(255,255,255,0.6)"/>
+      <circle cx="97" cy="65" r="2" fill="rgba(255,255,255,0.6)"/>
+      <g id="bp_evSmile" opacity="0"><path d="M 68 88 Q 80 97 92 88" fill="none" stroke="rgba(0,255,157,0.7)" stroke-width="2" stroke-linecap="round"/></g>
+      <line id="bp_defaultMouth" x1="72" y1="90" x2="88" y2="90" stroke="rgba(0,255,157,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="80" y1="37" x2="72" y2="18" stroke="rgba(0,255,157,0.5)" stroke-width="1.5"/>
+      <circle cx="70" cy="15" r="4" fill="rgba(0,255,157,0.8)"><animate attributeName="opacity" values="0.5;1;0.5" dur="1.2s" repeatCount="indefinite"/></circle>
+      <ellipse cx="65" cy="185" rx="12" ry="16" fill="url(#bpLegG)" stroke="rgba(0,255,157,0.15)" stroke-width="1"/>
+      <ellipse cx="95" cy="185" rx="12" ry="16" fill="url(#bpLegG)" stroke="rgba(0,255,157,0.15)" stroke-width="1"/>
+      <g id="bp_evShoes" opacity="0"><ellipse cx="65" cy="198" rx="16" ry="6" fill="#1a1a3a" stroke="rgba(180,122,255,0.4)" stroke-width="1"/><ellipse cx="95" cy="198" rx="16" ry="6" fill="#1a1a3a" stroke="rgba(180,122,255,0.4)" stroke-width="1"/></g>
+      <!-- NEW badge highlight flash -->
+      <g id="bp_newLayer" opacity="0">
+        <ellipse cx="80" cy="110" rx="50" ry="85" fill="none" stroke="rgba(255,179,0,0.5)" stroke-width="2">
+          <animate attributeName="opacity" values="0;0.8;0" dur="0.8s" repeatCount="3"/>
+          <animate attributeName="rx" values="50;58;50" dur="0.8s" repeatCount="3"/>
+        </ellipse>
+      </g>
+      <defs>
+        <radialGradient id="bpHeadG" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#1a4a32"/><stop offset="100%" stop-color="#0a2818"/></radialGradient>
+        <radialGradient id="bpBodyG" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#163828"/><stop offset="100%" stop-color="#081a12"/></radialGradient>
+        <radialGradient id="bpArmG" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#143020"/><stop offset="100%" stop-color="#071410"/></radialGradient>
+        <radialGradient id="bpLegG" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#143020"/><stop offset="100%" stop-color="#071410"/></radialGradient>
+        <radialGradient id="bpEyeG" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#00ffcc"/><stop offset="100%" stop-color="#00aa88"/></radialGradient>
+        <linearGradient id="bpShirtG" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#0a2040"/><stop offset="100%" stop-color="#061428"/></linearGradient>
+        <linearGradient id="bpJacketG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a0a30"/><stop offset="100%" stop-color="#0a0818"/></linearGradient>
+        <linearGradient id="bpCapeG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="rgba(0,229,255,0.25)"/><stop offset="100%" stop-color="rgba(0,100,180,0.1)"/></linearGradient>
+        <linearGradient id="bpCrownG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ffcc00"/><stop offset="100%" stop-color="#ff8800"/></linearGradient>
+      </defs>
+    </svg>
+  </div>
+  <div class="bp-badge-icon" id="bpicon">🏅</div>
+  <div class="bpname" id="bpname"></div>
+  <div class="bpdesc" id="bpdesc"></div>
+  <div class="bpevo" id="bpevo"></div>
+  <div class="bpdismiss" onclick="closePop()">[ DISMISS ]</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let items = JSON.parse(localStorage.getItem('xeno2_items') || '[]');
+let encounters = JSON.parse(localStorage.getItem('xeno2_enc') || '[]');
+let earnedBadges = JSON.parse(localStorage.getItem('xeno2_badges') || '[]');
+let curFilter = 'all';
+let editId = null;
+let curStar = 0;
+
+// ── SAMPLE DATA ──
+if (!items.length) {
+  items = [
+    {id:uid(),cat:'book',title:'ノルウェイの森',creator:'村上春樹',rating:5,tags:['恋愛','喪失','文学'],memo:'地球の孤独概念の精髄。',date:'2025-01-15',status:'done'},
+    {id:uid(),cat:'movie',title:'ドライブ・マイ・カー',creator:'濱口竜介',rating:5,tags:['映画','沈黙','悲劇'],memo:'沈黙の使い方が異星的感性を刺激。',date:'2025-02-03',status:'done'},
+    {id:uid(),cat:'book',title:'1Q84',creator:'村上春樹',rating:4,tags:['SF','並行世界'],memo:'複数現実の概念は母星の量子論に近い。',date:'2025-02-20',status:'done'},
+    {id:uid(),cat:'movie',title:'怪物',creator:'是枝裕和',rating:5,tags:['多視点','子供'],memo:'同一事象の複数視点描写に知的興奮。',date:'2025-03-01',status:'done'},
+    {id:uid(),cat:'book',title:'コンビニ人間',creator:'村田沙耶香',rating:4,tags:['社会','同調圧力'],memo:'地球社会同調圧力の精密な記録。',date:'2025-03-10',status:'done'},
+  ];
+  save();
+}
+
+// ═══════════════════════════════════════════════════════
+//  BADGE DEFINITIONS + ALIEN EVOLUTION
+//  evoChange: which alien SVG layer to show/enhance
+// ═══════════════════════════════════════════════════════
+const BADGES = [
+  {id:'first_log',    icon:'📀', name:'FIRST DATA',    desc:'初めてのデータ記録',         evo:'本を手に持つ',        evoLayers:['evBook','evSmile'],     cond:()=>items.length>=1},
+  {id:'collector3',  icon:'📚', name:'READER',        desc:'本を3冊記録',                evo:'ヘッドフォン装着',    evoLayers:['evHeadphones'],         cond:()=>items.filter(i=>i.cat==='book'&&i.status==='done').length>=3},
+  {id:'cinephile3',  icon:'🎬', name:'CINEPHILE',     desc:'映画を3本記録',              evo:'宇宙人シャツを着る',  evoLayers:['evShirt'],              cond:()=>items.filter(i=>i.cat==='movie'&&i.status==='done').length>=3},
+  {id:'first_enc',   icon:'📡', name:'FIRST CONTACT', desc:'初めてのすれ違い通信',       evo:'靴を履く',            evoLayers:['evShoes'],              cond:()=>encounters.length>=1},
+  {id:'collector8',  icon:'🗃️', name:'ARCHIVIST',     desc:'合計8件のデータを収集',      evo:'サングラスをかける',  evoLayers:['evGlasses'],            cond:()=>items.filter(i=>i.status==='done').length>=8},
+  {id:'encounter5',  icon:'🌌', name:'EXPLORER',      desc:'5回のすれ違い通信',          evo:'ジャケットを羽織る',  evoLayers:['evJacket'],             cond:()=>encounters.length>=5},
+  {id:'high_compat', icon:'🔮', name:'RESONANCE',     desc:'一致度80%以上を達成',        evo:'ケープをまとう',      evoLayers:['evCape'],               cond:()=>encounters.some(e=>e.score>=80)},
+  {id:'collector15', icon:'💾', name:'MASTER',        desc:'合計15件のデータを収集',     evo:'満面の笑み（進化完成）',evoLayers:[],                      cond:()=>items.filter(i=>i.status==='done').length>=15},
+  {id:'return',      icon:'🛸', name:'RETURN READY',  desc:'帰還準備80%達成',            evo:'王冠をかぶる',        evoLayers:['evCrown'],              cond:()=>calcProg()>=80},
+];
+
+// LEVEL TABLE
+const LEVELS = [
+  {min:0, lv:1, name:'宇宙の新人'},
+  {min:1, lv:2, name:'地球ビギナー'},
+  {min:3, lv:3, name:'文化収集者'},
+  {min:5, lv:4, name:'地球マニア'},
+  {min:7, lv:5, name:'地球マスター'},
+  {min:9, lv:6, name:'文化大使'},
+];
+
+// ALIEN SPEECHES by level
+const SPEECHES = [
+  '...データ収集開始ニャ',
+  '地球の文化、面白いゾ！',
+  '本というものは良いな...',
+  '映画も素晴らしいデータだ！',
+  '地球人の感性を理解しつつある',
+  '母星に帰りたくない気がしてきた',
+];
+
+// ═══════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════
+function uid(){return Math.random().toString(36).slice(2,10);}
+function save(){
+  localStorage.setItem('xeno2_items',JSON.stringify(items));
+  localStorage.setItem('xeno2_enc',JSON.stringify(encounters));
+  localStorage.setItem('xeno2_badges',JSON.stringify(earnedBadges));
+}
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast on'+(type?' '+type:'');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',2600);
+}
+function calcProg(){
+  const done=items.filter(i=>i.status==='done').length;
+  const encBonus=Math.min(encounters.length*4,30);
+  const highBonus=encounters.filter(e=>e.score>=70).length*3;
+  return Math.min(Math.round(done*6+encBonus+highBonus),100);
+}
+function getLevel(){
+  const n=earnedBadges.length;
+  let lv=LEVELS[0];
+  for(const l of LEVELS){if(n>=l.min)lv=l;}
+  return lv;
+}
+
+// ═══════════════════════════════════════════════════════
+//  ALIEN EVOLUTION
+// ═══════════════════════════════════════════════════════
+function updateAlien(){
+  // Show layers for all earned badges
+  const allLayers=new Set();
+  for(const b of BADGES){
+    if(earnedBadges.includes(b.id)){
+      b.evoLayers.forEach(l=>allLayers.add(l));
+    }
+  }
+  // Fade in earned layers
+  const allLayerIds=['evBook','evSmile','evHeadphones','evShirt','evShoes','evGlasses','evJacket','evCape','evCrown'];
+  for(const lid of allLayerIds){
+    const el=document.getElementById(lid);
+    if(el) el.setAttribute('opacity', allLayers.has(lid) ? '1' : '0');
+  }
+  // Toggle default mouth
+  const dm=document.getElementById('defaultMouth');
+  if(dm) dm.setAttribute('opacity', allLayers.has('evSmile') ? '0' : '1');
+
+  // Update level display
+  const lv=getLevel();
+  const lvEl=document.getElementById('homeLevel');
+  const lvName=document.getElementById('homeLevelName');
+  const evoLabel=document.getElementById('evoLevelLabel');
+  if(lvEl) lvEl.textContent='LV.'+lv.lv;
+  if(lvName) lvName.textContent=lv.name;
+  if(evoLabel) evoLabel.textContent='LV.'+lv.lv+' '+lv.name;
+
+  // Update evolution badges row
+  const row=document.getElementById('evoBadgeRow');
+  if(row){
+    row.innerHTML=BADGES.map(b=>`
+      <span class="evo-badge${earnedBadges.includes(b.id)?'':' locked'}" title="${b.name}: ${b.evo}">${b.icon}</span>
+    `).join('');
+  }
+
+  // Update speech bubble
+  const lv2=getLevel();
+  const sp=SPEECHES[Math.min(lv2.lv-1,SPEECHES.length-1)];
+  const sb=document.getElementById('speechBubble');
+  if(sb) sb.textContent=sp;
+}
+
+function alienClick(){
+  const speeches=[
+    '本は地球人の魂が宿るデータだ...',
+    '映画は動く感情記録だな！',
+    'もっと地球文化を吸収したい！',
+    'すれ違い通信で仲間を探すか...',
+    '早く母星に報告を送らねば...',
+    'この星の文化は複雑で美しい',
+  ];
+  const sp=speeches[Math.floor(Math.random()*speeches.length)];
+  document.getElementById('speechBubble').textContent=sp;
+}
+
+// ═══════════════════════════════════════════════════════
+//  STARS BACKGROUND
+// ═══════════════════════════════════════════════════════
+function buildStars(){
+  const layer=document.getElementById('starsLayer');
+  if(!layer) return;
+  let html='';
+  for(let i=0;i<120;i++){
+    const x=Math.random()*100,y=Math.random()*100;
+    const sz=Math.random()*2+0.5;
+    const op1=(Math.random()*0.5+0.3).toFixed(2);
+    const op2=(Math.random()*0.2).toFixed(2);
+    const d=(Math.random()*4+1.5).toFixed(1);
+    const delay=(Math.random()*4).toFixed(1);
+    html+=`<div class="star-p" style="left:${x}%;top:${y}%;width:${sz}px;height:${sz}px;--op1:${op1};--op2:${op2};--d:${d}s;--delay:${delay}s"></div>`;
+  }
+  layer.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════════
+function renderAll(){
+  renderGrid();
+  renderHistory();
+  renderBadges();
+  updateHUD();
+  updateProgress();
+  updateAlien();
+}
+
+function updateHUD(){
+  const done=items.filter(i=>i.status==='done').length;
+  document.getElementById('hudCount').textContent=done;
+  document.getElementById('hudEnc').textContent=encounters.length;
+  document.getElementById('homeDone').textContent=done;
+  document.getElementById('homeEnc').textContent=encounters.length;
+}
+function updateProgress(){
+  const p=calcProg();
+  document.getElementById('pfill').style.width=p+'%';
+  document.getElementById('ppct').textContent=p+'%';
+  const phases=[[0,'PHASE 1: 調査'],[20,'PHASE 2: 収集'],[40,'PHASE 3: 解析'],[60,'PHASE 4: 同期'],[80,'PHASE 5: 帰還準備'],[95,'FINAL: 出発間近']];
+  let ph=phases[0][1];
+  for(const[th,lb] of phases){if(p>=th)ph=lb;}
+  document.getElementById('pphase').textContent=ph;
+}
+
+function renderGrid(){
+  const list=items.filter(i=>{
+    if(curFilter==='all')return true;
+    if(curFilter==='book')return i.cat==='book';
+    if(curFilter==='movie')return i.cat==='movie';
+    if(curFilter==='done')return i.status==='done';
+    if(curFilter==='want')return i.status==='want';
+    return true;
+  }).sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const g=document.getElementById('dataGrid');
+  if(!list.length){
+    g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-i">📡</div><div class="empty-t">NO DATA</div><div class="empty-s">データを登録してください</div><button class="btn btn-c" onclick="openModal()">▸ 登録</button></div>`;
+    return;
+  }
+  g.innerHTML=list.map(i=>{
+    const ss=[1,2,3,4,5].map(n=>`<span class="s${n<=(i.rating||0)?' on':''}"">★</span>`).join('');
+    const tags=(i.tags||[]).slice(0,4).map(t=>`<span class="tag">${t}</span>`).join('');
+    return`<div class="dc">
+      <div class="dc-top">
+        ${i.cat==='book'?'<span class="dp dp-b">📚 BOOK</span>':'<span class="dp dp-m">🎬 MOVIE</span>'}
+        <div class="dc-acts">
+          <button class="ia" onclick="editItem('${i.id}')">✏</button>
+          <button class="ia del" onclick="delItem('${i.id}')">✕</button>
+        </div>
+      </div>
+      <div class="dc-body">
+        <div class="dc-title">${i.title}</div>
+        ${i.creator?`<div class="dc-creator">${i.creator}</div>`:''}
+        <div class="stars">${ss}</div>
+        ${tags?`<div class="tags">${tags}</div>`:''}
+        ${i.memo?`<div class="dc-memo">${i.memo}</div>`:''}
+      </div>
+      <div class="dc-foot">
+        <span class="dc-date">${i.date||'—'}</span>
+        ${i.status==='done'?'<span class="sp sp-d">ACQUIRED</span>':'<span class="sp sp-w">TARGET</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setF(el,f){
+  document.querySelectorAll('#db .chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');curFilter=f;renderGrid();
+}
+
+function renderHistory(){
+  const hl=document.getElementById('histList');
+  document.getElementById('histTotal').textContent=encounters.length+' ENCOUNTERS';
+  if(!encounters.length){
+    hl.innerHTML=`<div class="empty"><div class="empty-i">🌌</div><div class="empty-t">NO HISTORY</div><div class="empty-s">すれ違い通信を試してください</div></div>`;
+    return;
+  }
+  hl.innerHTML=[...encounters].reverse().map(e=>{
+    const sc=e.score>=70?'hi':e.score>=40?'mi':'lo';
+    return`<div class="hrow" onclick="showHistDetail('${e.id}')">
+      <div class="hav">${e.avatar}</div>
+      <div><div class="hn">${e.name}</div><div class="hd">${e.planet} · 共通${e.shared}件</div></div>
+      <div class="hr2"><div class="hsc ${sc}">${e.score}%</div><div class="hdate">${e.date}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderBadges(){
+  document.getElementById('bEarned').textContent=earnedBadges.length;
+  document.getElementById('bTotal').textContent=BADGES.length;
+  document.getElementById('badgeGrid').innerHTML=BADGES.map(b=>{
+    const e=earnedBadges.includes(b.id);
+    return`<div class="bcard${e?' earned':''}">
+      ${e&&b.evo?`<div class="bcard-evo">外見変化</div>`:''}
+      <span class="bcard-icon">${b.icon}</span>
+      <div class="bcard-name">${b.name}</div>
+      <div class="bcard-desc">${b.desc}</div>
+      ${e?`<div class="bcard-e">★ ACQUIRED</div><div style="font-size:0.6rem;color:var(--cyan);margin-top:0.25rem;font-family:'Share Tech Mono',monospace;">${b.evo}</div>`:''}
+      ${!e?`<div class="bcard-prog">未獲得 → ${b.evo}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+//  BADGES CHECK
+// ═══════════════════════════════════════════════════════
+function checkBadges(silent=false){
+  const prev=earnedBadges.length;
+  const newOnes=[];
+  for(const b of BADGES){
+    if(!earnedBadges.includes(b.id)&&b.cond()){
+      earnedBadges.push(b.id);newOnes.push(b);
+    }
+  }
+  save();renderBadges();updateAlien();
+  if(!silent&&newOnes.length){
+    document.getElementById('newBadgeDot').style.display='inline-block';
+    setTimeout(()=>showBadgePop(newOnes[0]),400);
+  }
+}
+
+function showBadgePop(b){
+  document.getElementById('bpicon').textContent=b.icon;
+  document.getElementById('bpname').textContent=b.name;
+  document.getElementById('bpdesc').textContent=b.desc;
+  document.getElementById('bpevo').textContent=b.evo?'👽 外見変化: '+b.evo:'';
+
+  // Sync all earned layers into popup alien
+  const allLayers=new Set();
+  for(const bd of BADGES){
+    if(earnedBadges.includes(bd.id)){
+      bd.evoLayers.forEach(l=>allLayers.add(l));
+    }
+  }
+  const allLayerIds=['evBook','evSmile','evHeadphones','evShirt','evShoes','evGlasses','evJacket','evCape','evCrown'];
+  for(const lid of allLayerIds){
+    const el=document.getElementById('bp_'+lid);
+    if(el) el.setAttribute('opacity', allLayers.has(lid)?'1':'0');
+  }
+  const dm=document.getElementById('bp_defaultMouth');
+  if(dm) dm.setAttribute('opacity', allLayers.has('evSmile')?'0':'1');
+  // Flash the new ring
+  const nl=document.getElementById('bp_newLayer');
+  if(nl) nl.setAttribute('opacity','1');
+  setTimeout(()=>{ if(nl) nl.setAttribute('opacity','0'); }, 2500);
+
+  document.getElementById('bpop').classList.add('on');
+  document.getElementById('popDim').classList.add('on');
+}
+function closePop(){
+  document.getElementById('bpop').classList.remove('on');
+  document.getElementById('popDim').classList.remove('on');
+  document.getElementById('newBadgeDot').style.display='none';
+}
+
+// ═══════════════════════════════════════════════════════
+//  ENCOUNTER
+// ═══════════════════════════════════════════════════════
+const ALIENS=[
+  {name:'Zyx-7',planet:'アルファ星雲',avatar:'👽'},
+  {name:'Klorb',planet:'ベータ銀河',avatar:'🤖'},
+  {name:'Veena-X',planet:'デルタ恒星系',avatar:'👾'},
+  {name:'Nublo',planet:'オメガ星団',avatar:'🧬'},
+  {name:'Trixal',planet:'ゼータ惑星',avatar:'🌀'},
+  {name:'Dravon',planet:'カッパ星雲',avatar:'🔮'},
+  {name:'Elara-9',planet:'イオタ恒星',avatar:'⚡'},
+];
+const ALIEN_LIB=[
+  ['ノルウェイの森','村上春樹','book'],['1Q84','村上春樹','book'],['海辺のカフカ','村上春樹','book'],
+  ['コンビニ人間','村田沙耶香','book'],['流浪の月','凪良ゆう','book'],['かがみの孤城','辻村深月','book'],
+  ['52ヘルツのクジラたち','町田そのこ','book'],['老人と海','ヘミングウェイ','book'],
+  ['カラマーゾフの兄弟','ドストエフスキー','book'],['変身','カフカ','book'],
+  ['ドライブ・マイ・カー','濱口竜介','movie'],['怪物','是枝裕和','movie'],
+  ['万引き家族','是枝裕和','movie'],['花束みたいな恋をした','土井裕泰','movie'],
+  ['君の名は。','新海誠','movie'],['千と千尋の神隠し','宮崎駿','movie'],
+  ['ショーシャンクの空に','フランク・ダラボン','movie'],['インターステラー','C・ノーラン','movie'],
+  ['寄生虫','ポン・ジュノ','movie'],['おくりびと','滝田洋二郎','movie'],
+];
+const TX_MSGS=['量子信号を送信中...','宇宙ネットワークに接続中...','近傍宙域をスキャン中...','文化パターンを解析中...','一致度を計算中...','データ照合完了 — 通信確立'];
+
+async function startEnc(){
+  if(!items.filter(i=>i.status==='done').length){
+    toast('まずデータを1件以上記録してください','a');return;
+  }
+  const btn=document.getElementById('scanBtn');
+  btn.disabled=true;
+  document.getElementById('scanAnim').classList.add('active');
+  document.getElementById('tx').classList.add('on');
+
+  for(const msg of TX_MSGS){
+    document.getElementById('txlog').textContent=msg;
+    document.getElementById('scanLog').textContent=msg;
+    await sleep(550);
+  }
+
+  const alien=ALIENS[Math.floor(Math.random()*ALIENS.length)];
+  const lib=[...ALIEN_LIB].sort(()=>Math.random()-0.5).slice(0,8+Math.floor(Math.random()*6));
+  // inject 0-2 of user's items
+  const myDone=items.filter(i=>i.status==='done');
+  const injectN=Math.min(Math.floor(Math.random()*3),myDone.length);
+  for(let k=0;k<injectN;k++){
+    const pick=myDone[Math.floor(Math.random()*myDone.length)];
+    if(!lib.find(a=>a[0]===pick.title))
+      lib.push([pick.title,pick.creator||'',pick.cat]);
+  }
+
+  const myTitles=new Set(myDone.map(i=>i.title.trim().toLowerCase()));
+  const shared=lib.filter(a=>myTitles.has(a[0].trim().toLowerCase()));
+  const score=Math.min(shared.length*20,100);
+
+  document.getElementById('tx').classList.remove('on');
+
+  const enc={
+    id:uid(),name:alien.name,planet:alien.planet,avatar:alien.avatar,
+    score,shared:shared.length,
+    sharedItems:shared.map(a=>({title:a[0],creator:a[1],cat:a[2]})),
+    recItems:lib.filter(a=>!myTitles.has(a[0].trim().toLowerCase())).slice(0,3).map(a=>({title:a[0],creator:a[1],cat:a[2]})),
+    date:new Date().toISOString().split('T')[0],
+  };
+  encounters.push(enc);save();
+
+  renderEncResult(enc);
+  renderHistory();updateHUD();updateProgress();checkBadges();
+
+  document.getElementById('scanAnim').classList.remove('active');
+  document.getElementById('noEncYet').style.display='none';
+  btn.disabled=false;
+
+  if(score>=80) toast('🔮 高一致度 '+score+'% — RESONANCE達成！','c');
+  else if(score>=40) toast('📡 一致度 '+score+'% のすれ違いが発生','');
+  else toast('📡 '+alien.name+' とすれ違いました ('+score+'%)');
+}
+
+function renderEncResult(enc){
+  const el=document.getElementById('encResult');
+  const sc=enc.score>=70?'hi':enc.score>=40?'mi':'lo';
+  const sharedH=enc.sharedItems.length
+    ?enc.sharedItems.map(i=>`<div class="srow"><div class="sm"></div><div class="st">${i.title}</div><div class="sc">${i.creator}</div></div>`).join('')
+    :`<div style="font-size:0.72rem;color:var(--txt3);padding:0.35rem">共通データなし</div>`;
+  const recH=enc.recItems.length
+    ?enc.recItems.map(i=>`<div class="rrow"><div class="ri">${i.cat==='book'?'📚':'🎬'}</div><div><div class="rt">${i.title}</div><div class="rc">${i.creator}</div></div></div>`).join('')
+    :`<div style="font-size:0.72rem;color:var(--txt3)">レコメンドなし</div>`;
+  const whyH=enc.sharedItems.length
+    ?enc.sharedItems.slice(0,3).map(i=>`<span class="why">${i.title}</span>`).join('')
+    :`<span class="why" style="border-color:var(--txt3);color:var(--txt3)">共通データなし</span>`;
+
+  el.innerHTML=`
+    <div class="enc-rhead">
+      <div class="enc-alien">
+        <div class="aav">${enc.avatar}</div>
+        <div><div class="aname">${enc.name}</div><div class="aplanet">${enc.planet}より来訪</div></div>
+      </div>
+      <div class="escore-wrap">
+        <div class="escore ${sc}">${enc.score}%</div>
+        <div class="escore-l">文化一致度</div>
+      </div>
+    </div>
+    <div class="enc-rbody">
+      <div class="enc-why">${whyH}</div>
+      <div class="sub-l">▸ 共通データ (${enc.sharedItems.length}件)</div>
+      <div class="shared-list">${sharedH}</div>
+      <div class="sub-l" style="color:var(--amber)">▸ ${enc.name}のおすすめ</div>
+      <div class="rec-list">${recH}</div>
+    </div>
+    <div class="enc-rfoot">
+      <button class="btn btn-a" style="font-size:0.62rem" onclick="addRec('${enc.id}')">おすすめを追加</button>
+    </div>`;
+  el.classList.add('on');
+}
+
+function addRec(encId){
+  const enc=encounters.find(e=>e.id===encId);
+  if(!enc)return;
+  let added=0;
+  for(const r of enc.recItems){
+    if(!items.find(i=>i.title===r.title)){
+      items.push({id:uid(),cat:r.cat,title:r.title,creator:r.creator,rating:0,tags:[],memo:'',date:new Date().toISOString().split('T')[0],status:'want'});
+      added++;
+    }
+  }
+  save();renderGrid();updateProgress();
+  if(added)toast('⭐ '+added+'件を目標リストに追加','a');
+  else toast('すでにリスト済みです');
+}
+
+function showHistDetail(encId){
+  const enc=encounters.find(e=>e.id===encId);if(!enc)return;
+  renderEncResult(enc);
+  document.getElementById('noEncYet').style.display='none';
+  document.getElementById('encResult').classList.add('on');
+  goPage('enc',document.querySelectorAll('.nb')[2]);
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════════════
+function openModal(){
+  editId=null;curStar=0;
+  document.getElementById('mTitle').textContent='▸ データ登録';
+  document.getElementById('fCat').value='book';
+  document.getElementById('fStat').value='done';
+  ['fTitle','fCreator','fTags','fMemo'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fDate').value=new Date().toISOString().split('T')[0];
+  updateStarUI(0);
+  document.getElementById('modal').classList.add('on');
+}
+function editItem(id){
+  const i=items.find(x=>x.id===id);if(!i)return;
+  editId=id;curStar=i.rating||0;
+  document.getElementById('mTitle').textContent='▸ データ編集';
+  document.getElementById('fCat').value=i.cat;
+  document.getElementById('fStat').value=i.status;
+  document.getElementById('fTitle').value=i.title;
+  document.getElementById('fCreator').value=i.creator||'';
+  document.getElementById('fTags').value=(i.tags||[]).join(', ');
+  document.getElementById('fMemo').value=i.memo||'';
+  document.getElementById('fDate').value=i.date||'';
+  updateStarUI(curStar);
+  document.getElementById('modal').classList.add('on');
+}
+function closeModal(){document.getElementById('modal').classList.remove('on');}
+function setStar(n){curStar=curStar===n?0:n;updateStarUI(curStar);}
+function updateStarUI(n){document.querySelectorAll('.sps').forEach(s=>s.classList.toggle('on',+s.dataset.v<=n));}
+
+function saveItem(){
+  const title=document.getElementById('fTitle').value.trim();
+  if(!title){toast('タイトルを入力してください','a');return;}
+  const tags=document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const obj={cat:document.getElementById('fCat').value,status:document.getElementById('fStat').value,title,creator:document.getElementById('fCreator').value.trim(),rating:curStar,tags,memo:document.getElementById('fMemo').value.trim(),date:document.getElementById('fDate').value};
+  if(editId){items[items.findIndex(i=>i.id===editId)]={...items.find(i=>i.id===editId),...obj};toast('✅ 更新しました','c');}
+  else{items.unshift({id:uid(),...obj});toast('📀 記録しました','c');}
+  save();renderAll();checkBadges();closeModal();
+}
+
+function delItem(id){
+  if(!confirm('削除しますか？'))return;
+  items=items.filter(i=>i.id!==id);
+  save();renderAll();toast('削除しました');
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════════════════
+function goPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  if(el)el.classList.add('on');
+  if(id==='hist')renderHistory();
+  if(id==='bdg')renderBadges();
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+buildStars();
+renderAll();
+checkBadges(true);
+</script>
+</body>
+</html>
